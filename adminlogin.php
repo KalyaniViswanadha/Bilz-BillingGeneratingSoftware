@@ -13,7 +13,7 @@
           <header>ADMIN LOGIN</header>
           <div class="field">
               <span class="fa fa-user"></span>
-              <input type="text" name="email" placeholder="ID">
+              <input type="text" name="text" placeholder="ID">
           </div>
           <div class="field">
             <span class="fa fa-lock"></span>
@@ -26,11 +26,13 @@
           <!-- <span class="logn-form-copy">Not an admin ? <a href="login.php" class="login-form__sign-up">Login as User</a></span> -->
     </form>
     <?php
+    $admin_email = 'admin';
+    $admin_password = 'admin';
         if ($_SERVER["REQUEST_METHOD"] == "POST")
         {
             $email=$_POST['email'];
             $pass=$_POST['pass'];
-            if($email=="admin" && $pass=="admin"){
+            if ($email == $admin_email && $password == $admin_password){
               $_SESSION['admin']=true;
               header('location:admin.php');
             }

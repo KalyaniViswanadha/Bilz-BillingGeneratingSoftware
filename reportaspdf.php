@@ -1,6 +1,7 @@
 <?php
 	include 'connect.php';
 	require_once('./tcpdf/tcpdf.php');
+
 	$obj_pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 	$obj_pdf->SetCreator(PDF_CREATOR);
 	$obj_pdf->SetTitle("YOUR BILL REPORT");
@@ -35,31 +36,32 @@
         </thead>
 		<tbody>";
 
-			if(isset($_SESSION['from_date']) && isset($_SESSION['to_date']))
-			{
-				$from_date = $_SESSION['from_date'];
-				$to_date = $_SESSION['to_date'];
-				$sesid=$_SESSION['user_id'];
-				$query = "SELECT bill_id, mode, cust_name, cust_mob, prod_quantity, prod_price*prod_quantity AS totalcost FROM bills WHERE user_id='$sesid' AND date BETWEEN '$from_date' AND '$to_date' GROUP BY cust_mob";
-				$query_run = mysqli_query($conn, $query);
-				$countervar = 1;
+	if (isset($_SESSION['from_date']) && isset($_SESSION['to_date'])) {
+		$from_date = $_SESSION['from_date'];
+		$to_date = $_SESSION['to_date'];
+		$sesid = $_SESSION['user_id'];
 
-					foreach($query_run as $row)
-					{
-								$content.='  
-								<tr>   
-									<td>'.$countervar.'</td>  
-									<td>'.$row["bill_id"].'</td>  
-									<td>'.$row["mode"].'</td>  
-									<td>'.$row["cust_name"].'</td>
-									<td>'.$row["cust_mob"].'</td>
-									<td>'.$row["prod_quantity"].'</td>  
-									<td>'.$row["totalcost"].'</td>
-								</tr>';
-								$countervar++;
-					}
-					$content.='</table>';
-			}
+		$query = "SELECT bill_id, mode, cust_name, cust_mob, prod_quantity, prod_price*prod_quantity AS totalcost FROM bills WHERE user_id='$sesid' AND date BETWEEN '$from_date' AND '$to_date' GROUP BY cust_mob";
+		$query_run = mysqli_query($conn, $query);
+		$countervar = 1;
+
+		while ($row = mysqli_fetch_assoc($query_run)) {
+			$content .= '
+			<tr>   
+				<td>' . $countervar . '</td>  
+				<td>' . $row["bill_id"] . '</td>  
+				<td>' . $row["mode"] . '</td>  
+				<td>' . $row["cust_name"] . '</td>
+				<td>' . $row["cust_mob"] . '</td>
+				<td>' . $row["prod_quantity"] . '</td>  
+				<td>' . $row["totalcost"] . '</td>
+			</tr>';
+			$countervar++;
+		}
+
+		$content .= '</tbody></table>';
+	}
+
 	$obj_pdf->WriteHTML($content);
 	$obj_pdf->Output("Report.pdf");
 ?>
